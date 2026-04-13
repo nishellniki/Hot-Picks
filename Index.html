@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Collector Hub | Uniform Card Layout</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0b0b0d;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    color: #f0f0f0;
+    padding-bottom: 40px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+h2 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #e2c28b, #c8a45a);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    padding: 24px 10px 16px;
+}
+
+/* Two separate boxes layout */
+.control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #0f0f12;
+    border-radius: 28px;
+    padding: 16px 24px;
+    margin: 12px 0 20px;
+    border: 1px solid #23232a;
+}
+
+.category-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.cat-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 20px;
+    background: #15151c;
+    border: 1px solid #2c2c34;
+    color: #e2e2e8;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    background: #22222b;
+    border-color: #c8a45a;
+    color: #ffffff;
+}
+
+.activeCat {
+    background: #c8a45a;
+    color: #0a0a0c;
+    border-color: #c8a45a;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(200,164,90,0.3);
+}
+
+.search-section {
+    background: #0a0a0e;
+    border-radius: 60px;
+    border: 1px solid #2c2c34;
+    padding: 4px 8px 4px 20px;
+    min-width: 240px;
+    transition: all 0.2s;
+}
+
+.search-section:focus-within {
+    border-color: #c8a45a;
+    box-shadow: 0 0 0 3px rgba(200,164,90,0.2);
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-icon {
+    font-size: 1rem;
+    color: #b0b0bc;
+}
+
+#searchInput {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 0.9rem;
+    padding: 10px 0;
+    width: 220px;
+    outline: none;
+    font-family: inherit;
+}
+
+#searchInput::placeholder {
+    color: #6a6a78;
+    font-weight: 400;
+}
+
+.clear-search {
+    background: none;
+    border: none;
+    color: #9a9aaa;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 8px;
+    border-radius: 30px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-search:hover {
+    color: #c8a45a;
+    background: #20202a;
+}
+
+.search-status {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin: 8px 0 16px;
+    padding: 6px 12px;
+    background: #0c0c10;
+    border-radius: 40px;
+    border: 1px solid #202026;
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Grid layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    padding: 12px 0 40px;
+}
+
+/* Card design - FLEX COLUMN for consistent button alignment */
+.card {
+    background: #131318;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    border: 1px solid #24242c;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.6);
+    border-color: #3d3d4a;
+}
+
+.slider {
+    position: relative;
+    background: #09090c;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.slider img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    transition: opacity 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+.slider img.active {
+    display: block;
+    animation: smoothFade 0.4s ease-out;
+}
+
+@keyframes smoothFade {
+    0% { opacity: 0.5; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 34px;
+    border-radius: 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s;
+    opacity: 0.6;
+    z-index: 2;
+}
+
+.nav-btn:hover {
+    background: #c8a45a;
+    color: black;
+    opacity: 1;
+}
+
+.nav-left {
+    left: 8px;
+}
+.nav-right {
+    right: 8px;
+}
+
+/* Card content - FLEX GROW to push button to bottom */
+.card-content {
+    padding: 14px 12px 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Title: max 2 lines, fixed height to ensure consistency */
+.title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #f0f0f5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.3em;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+/* Buy button - stays at bottom, aligned across all cards */
+.buy-link {
+    display: inline-block;
+    background: #c8a45a;
+    color: #0a0a0c;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+    letter-spacing: 0.4px;
+    text-align: center;
+    width: fit-content;
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+.buy-link:hover {
+    background: #e0bc7c;
+    transform: scale(1.02);
+}
+
+.empty-message {
+    text-align: center;
+    padding: 70px 20px;
+    color: #b0b0c0;
+    font-size: 1rem;
+    background: #0f0f14;
+    border-radius: 48px;
+    margin-top: 30px;
+    border: 1px dashed #3a3a44;
+}
+
+/* Responsive */
+@media (max-width: 780px) {
+    .control-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 16px;
+    }
+    .category-section {
+        justify-content: center;
+        width: 100%;
+    }
+    .cat-buttons {
+        justify-content: center;
+        width: 100%;
+    }
+    .search-section {
+        width: 100%;
+    }
+    #searchInput {
+        width: 100%;
+    }
+    .search-wrapper {
+        width: 100%;
+    }
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+    }
+    .title {
+        font-size: 0.75rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Collector Hub</h2>
+
+    <div class="control-panel">
+        <div class="category-section">
+            <div class="cat-buttons">
+                <button class="btn activeCat" data-cat="Anime">Anime Figures</button>
+                <button class="btn" data-cat="Diecast">Premium Diecast</button>
+                <button class="btn" data-cat="Setup">Setup & Display</button>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search any product..." autocomplete="off">
+                <button class="clear-search" id="clearSearchBtn" aria-label="Clear">✖</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="searchStatus" class="search-status"></div>
+    
+    <div id="container" class="grid"></div>
+</div>
+
+<script>
+// ========== COMPLETE PRODUCT DATABASE ==========
+// FIXED: "86-Eighty Six Vladilena·Milize" - removed " In Pajamas"
+const data = [
+
+/* ================= ORIGINAL ANIME ================= */
+{
+cat:"Anime",
+title:"Masked Girl Yuna",
+link:"https://s.click.aliexpress.com/e/_c389O5z3",
+imgs:["https://i.imgur.com/o6fXIBx.jpg","https://i.imgur.com/yHNQTgA.jpg"]
+},
+{
+cat:"Anime",
+title:"Alisa Kujou Figure",
+link:"https://s.click.aliexpress.com/e/_c3vzDl4D",
+imgs:["https://i.imgur.com/zoDg4qs.jpg","https://i.imgur.com/Ubcm821.jpg"]
+},
+{
+cat:"Anime",
+title:"Alisa Kujou Variant",
+link:"https://s.click.aliexpress.com/e/_c4t08QbF",
+imgs:["https://i.imgur.com/6h9oJde.jpg","https://i.imgur.com/JxD74vf.jpg"]
+},
+{
+cat:"Anime",
+title:"Hatsune Miku Cute Figure",
+link:"https://s.click.aliexpress.com/e/_c4SE3Azr",
+imgs:["https://i.imgur.com/toEM4X4.jpg","https://i.imgur.com/wBJsHnS.jpg"]
+},
+{
+cat:"Anime",
+title:"YoRHa Kimono Girl",
+link:"https://s.click.aliexpress.com/e/_c3nyzNPf",
+imgs:["https://i.imgur.com/SPNdKPl.jpg","https://i.imgur.com/w7pqeCK.jpg","https://i.imgur.com/EPXuBTV.jpg"]
+},
+{
+cat:"Anime",
+title:"Frieren Figure",
+link:"https://s.click.aliexpress.com/e/_c3wpnW2p",
+imgs:["https://i.imgur.com/E1pF6Zj.jpg","https://i.imgur.com/YajC9Yq.jpg"]
+},
+{
+cat:"Anime",
+title:"Elysia Figure",
+link:"https://s.click.aliexpress.com/e/_c3BJChlb",
+imgs:["https://i.imgur.com/ia6zW6h.jpg","https://i.imgur.com/wqYoDwD.jpg"]
+},
+{
+cat:"Anime",
+title:"Nachoneko Figure",
+link:"https://s.click.aliexpress.com/e/_c33G50fb",
+imgs:["https://i.imgur.com/8vdyS9r.jpg","https://i.imgur.com/wYMJzGl.jpg"]
+},
+{
+cat:"Anime",
+title:"Gojo Satoru",
+link:"https://s.click.aliexpress.com/e/_c3EPOh29",
+imgs:["https://i.imgur.com/EilmDkZ.jpg","https://i.imgur.com/jha51ZC.jpg"]
+},
+{
+cat:"Anime",
+title:"Spy × Family Anya",
+link:"https://s.click.aliexpress.com/e/_c2xXxsOp",
+imgs:["https://i.imgur.com/Zx7vFhb.jpg","https://i.imgur.com/m2OWzsx.jpg"]
+},
+{
+cat:"Anime",
+title:"Hatsune Miku",
+link:"https://s.click.aliexpress.com/e/_c3qEn58v",
+imgs:["https://i.imgur.com/qriDAVb.jpg","https://i.imgur.com/ZDq1EOU.jpg"]
+},
+{
+cat:"Anime",
+title:"Jujutsu Kaisen Satoru Gojo",
+link:"https://s.click.aliexpress.com/e/_c3Eg4qC5",
+imgs:["https://i.imgur.com/0PzRD87.jpg","https://i.imgur.com/FpOJRIb.jpg","https://i.imgur.com/vG88Jom.jpg","https://i.imgur.com/KiEY5lH.jpg"]
+},
+
+/* ================= NEW ANIME FIGURES ================= */
+{
+cat:"Anime",
+title:"Pink Hair Rabbit Girl",
+link:"https://s.click.aliexpress.com/e/_c4CwIFBT",
+imgs:["https://i.imgur.com/10VYPXI.jpg","https://i.imgur.com/TPLSrh8.jpg","https://i.imgur.com/YyIRUxo.jpg","https://i.imgur.com/kXUJ3xw.jpg","https://i.imgur.com/hS67cIi.jpg","https://i.imgur.com/Y3J4Wn9.jpg","https://i.imgur.com/mC6g6QE.jpg"]
+},
+{
+cat:"Anime",
+title:"A Classmate Who Won't Let Me Drink Water",
+link:"https://s.click.aliexpress.com/e/_c3JFqWJX",
+imgs:["https://i.imgur.com/bC33BHM.jpg","https://i.imgur.com/wiTQtTm.jpg","https://i.imgur.com/GIb8uBO.jpg","https://i.imgur.com/EZak8Bu.jpg","https://i.imgur.com/EasSc3o.jpg"]
+},
+{
+cat:"Anime",
+title:"86-Eighty Six Vladilena·Milize",
+link:"https://s.click.aliexpress.com/e/_c3IRxsYD",
+imgs:["https://i.imgur.com/vyEovbD.jpg","https://i.imgur.com/TR4Vf0v.jpg","https://i.imgur.com/8nMd0R4.jpg","https://i.imgur.com/06dUFmU.jpg"]
+},
+{
+cat:"Anime",
+title:"Shiroko Sunaookami",
+link:"https://s.click.aliexpress.com/e/_c4cYnVFF",
+imgs:["https://i.imgur.com/cUi4Ik8.jpg","https://i.imgur.com/Xc4FtIq.jpg","https://i.imgur.com/PPy23ko.jpg","https://i.imgur.com/wF4zUJU.jpg"]
+},
+{
+cat:"Anime",
+title:"Anime Girl Asuka",
+link:"https://s.click.aliexpress.com/e/_c42AxUBB",
+imgs:["https://i.imgur.com/dyJ6Gyb.jpg","https://i.imgur.com/cIKW6Nz.jpg","https://i.imgur.com/nM8tS6W.jpg","https://i.imgur.com/e2rcMEi.jpg","https://i.imgur.com/HVACFs2.jpg","https://i.imgur.com/nQ4Cupf.jpg"]
+},
+{
+cat:"Anime",
+title:"The Journey of Elaina anime girl figure",
+link:"https://s.click.aliexpress.com/e/_c4EKHZDB",
+imgs:["https://i.imgur.com/4AgaiRk.jpg","https://i.imgur.com/F4KTz8J.jpg","https://i.imgur.com/ZJ99lpe.jpg"]
+},
+{
+cat:"Anime",
+title:"Mio Xenoblade Chronicles 3",
+link:"https://s.click.aliexpress.com/e/_c3xLQ6Up",
+imgs:["https://i.imgur.com/07cCzjP.jpg","https://i.imgur.com/Pd0ZJVh.jpg","https://i.imgur.com/wKNw9yc.jpg"]
+},
+{
+cat:"Anime",
+title:"Anime Action Girl Figure",
+link:"https://s.click.aliexpress.com/e/_c3UVdELJ",
+imgs:["https://i.imgur.com/VTHzTnE.jpg","https://i.imgur.com/Q5K6Kzm.jpg","https://i.imgur.com/OF2Vaje.jpg"]
+},
+{
+cat:"Anime",
+title:"Reisalin Stout Girl",
+link:"https://s.click.aliexpress.com/e/_c3YHLFP7",
+imgs:["https://i.imgur.com/uifXqoO.jpg","https://i.imgur.com/L3VjwFk.jpg","https://i.imgur.com/HJ4fIlZ.jpg","https://i.imgur.com/4vvvytf.jpg","https://i.imgur.com/yw1P6NB.jpg"]
+},
+{
+cat:"Anime",
+title:"Hu Tao Anime Skateboard Girl",
+link:"https://s.click.aliexpress.com/e/_c40nBQdF",
+imgs:["https://i.imgur.com/F83fkdP.jpg","https://i.imgur.com/PBrLyIi.jpg","https://i.imgur.com/fGCG1Nd.jpg","https://i.imgur.com/SfgREql.jpg","https://i.imgur.com/c7jygaf.jpg"]
+},
+{
+cat:"Anime",
+title:"Arona & Prana Girl Figure",
+link:"https://s.click.aliexpress.com/e/_c2RVDDqp",
+imgs:["https://i.imgur.com/ToKYbnp.jpg","https://i.imgur.com/K3OjVv8.jpg","https://i.imgur.com/QBnEP98.jpg"]
+},
+{
+cat:"Anime",
+title:"Gojo Satoru Geto Suguru Fushiguro Toji",
+link:"https://s.click.aliexpress.com/e/_c44YR4nJ",
+imgs:["https://i.imgur.com/bhUH6tY.jpg","https://i.imgur.com/hnUhJg6.jpg","https://i.imgur.com/l2Gile4.jpg"]
+},
+{
+cat:"Anime",
+title:"Hololive Relax Time",
+link:"https://s.click.aliexpress.com/e/_c3nSHx1R",
+imgs:["https://i.imgur.com/pXP44gZ.jpg","https://i.imgur.com/4CQywqs.jpg","https://i.imgur.com/nL4iuZw.jpg","https://i.imgur.com/eEQfEWI.jpg"]
+},
+
+/* ================= DIECAST ================= */
+{
+cat:"Diecast",
+title:"BMW M3 Model Car",
+link:"https://s.click.aliexpress.com/e/_c3LmOUF3",
+imgs:["https://i.imgur.com/JjfuVtQ.jpg","https://i.imgur.com/UXohw6a.jpg","https://i.imgur.com/gXtUfD6.jpg","https://i.imgur.com/4WHGdqa.jpg","https://i.imgur.com/HiqV5FH.jpg","https://i.imgur.com/6L3L4fv.jpg","https://i.imgur.com/Mwc1Lce.jpg"]
+},
+{
+cat:"Diecast",
+title:"Convertible Porsche 911",
+link:"https://s.click.aliexpress.com/e/_c4KfYCjj",
+imgs:["https://i.imgur.com/7NVWmJW.jpg","https://i.imgur.com/S1VB1Jj.jpg","https://i.imgur.com/VWmq5NM.jpg"]
+},
+{
+cat:"Diecast",
+title:"BMW M4 Alloy Model",
+link:"https://s.click.aliexpress.com/e/_c3GKbDY1",
+imgs:["https://i.imgur.com/abq6Qcp.jpg","https://i.imgur.com/t8Y29r2.jpg","https://i.imgur.com/mdUhRbA.jpg","https://i.imgur.com/3kOBSwt.jpg","https://i.imgur.com/nKygjwC.jpg","https://i.imgur.com/gv39B49.jpg","https://i.imgur.com/POEn9cD.jpg","https://i.imgur.com/3mIXCJC.jpg"]
+},
+{
+cat:"Diecast",
+title:"BMW X5 Model",
+link:"https://s.click.aliexpress.com/e/_c2xTsd8D",
+imgs:["https://i.imgur.com/JTQkbS4.jpg","https://i.imgur.com/ZLmn2s1.jpg","https://i.imgur.com/bvMzPLk.jpg"]
+},
+{
+cat:"Diecast",
+title:"Audi RS7 Sportback",
+link:"https://s.click.aliexpress.com/e/_c3NghvK9",
+imgs:["https://i.imgur.com/qrUghTZ.jpg","https://i.imgur.com/YuCybQw.jpg"]
+},
+{
+cat:"Diecast",
+title:"Dodge Challenger Hellcat",
+link:"https://s.click.aliexpress.com/e/_c4m3OE33",
+imgs:["https://i.imgur.com/GHZcRja.jpg","https://i.imgur.com/KkOOgAV.jpg","https://i.imgur.com/oQ0WsgU.jpg","https://i.imgur.com/RIirEmi.jpg"]
+},
+{
+cat:"Diecast",
+title:"Nissan Skyline GTR R34",
+link:"https://s.click.aliexpress.com/e/_c3AmwXjn",
+imgs:["https://i.imgur.com/1OGmwGz.jpg","https://i.imgur.com/ThTmLnY.jpg","https://i.imgur.com/AmN0OvF.jpg","https://i.imgur.com/oBhNZkj.jpg","https://i.imgur.com/vONkqAb.jpg","https://i.imgur.com/18Kwryi.jpg"]
+},
+{
+cat:"Diecast",
+title:"Rolls Royce Spectre",
+link:"https://s.click.aliexpress.com/e/_c3SJyQVr",
+imgs:["https://i.imgur.com/M1fR9gS.jpg","https://i.imgur.com/VfUGNfB.jpg","https://i.imgur.com/mnlpTAY.jpg","https://i.imgur.com/G8NATTP.jpg"]
+},
+{
+cat:"Diecast",
+title:"BMW I5 M60",
+link:"https://s.click.aliexpress.com/e/_c3bNr8Tb",
+imgs:["https://i.imgur.com/gPya3D3.jpg","https://i.imgur.com/kG7zkFi.jpg","https://i.imgur.com/iVva2vZ.jpg","https://i.imgur.com/iRjzV3M.jpg","https://i.imgur.com/AmVKA5i.jpg"]
+},
+{
+cat:"Diecast",
+title:"GTR CSR2",
+link:"https://s.click.aliexpress.com/e/_c410MELb",
+imgs:["https://i.imgur.com/dWEs25R.jpg","https://i.imgur.com/cHuG2mR.jpg","https://i.imgur.com/FFupaVg.jpg","https://i.imgur.com/kQ2zbIG.jpg","https://i.imgur.com/o3sK6Lz.jpg","https://i.imgur.com/7c8LLP7.jpg"]
+},
+{
+cat:"Diecast",
+title:"Nissan GTR R35",
+link:"https://s.click.aliexpress.com/e/_c4sNB8dJ",
+imgs:["https://i.imgur.com/f1MRzxm.jpg","https://i.imgur.com/AROr3oP.jpg","https://i.imgur.com/m5WCBZP.jpg","https://i.imgur.com/h1nkFLK.jpg"]
+},
+{
+cat:"Diecast",
+title:"BMW M4 Coupe",
+link:"https://s.click.aliexpress.com/e/_c3pkUCdf",
+imgs:["https://i.imgur.com/NsoY2Al.jpg","https://i.imgur.com/4xbdnfr.jpg","https://i.imgur.com/MnQM1M2.jpg"]
+},
+{
+cat:"Diecast",
+title:"Toyota Prado SUV",
+link:"https://s.click.aliexpress.com/e/_c3smghdF",
+imgs:["https://i.imgur.com/mNs9b2p.jpg","https://i.imgur.com/5hS5wfX.jpg","https://i.imgur.com/uOop3S5.jpg","https://i.imgur.com/UtdRNQS.jpg","https://i.imgur.com/NGbmBHz.jpg","https://i.imgur.com/S2WiQIN.jpg"]
+},
+{
+cat:"Diecast",
+title:"Porsche GT3 RS",
+link:"https://s.click.aliexpress.com/e/_c4MlvXGD",
+imgs:["https://i.imgur.com/jdJdNhd.jpg","https://i.imgur.com/qU0FcGj.jpg","https://i.imgur.com/vW4m2E3.jpg"]
+},
+{
+cat:"Diecast",
+title:"Koenigsegg Jesko",
+link:"https://s.click.aliexpress.com/e/_c3IbjxK5",
+imgs:["https://i.imgur.com/BpwfXaF.jpg","https://i.imgur.com/yIpK9nk.jpg","https://i.imgur.com/V52PNhL.jpg","https://i.imgur.com/FkUi9Nd.jpg","https://i.imgur.com/sLwkMp8.jpg","https://i.imgur.com/TMTsh5K.jpg"]
+},
+
+/* ================= SETUP ================= */
+{
+cat:"Setup",
+title:"LED Setup Light",
+link:"#",
+imgs:["https://i.imgur.com/Ubcm821.jpg"]
+}, 
+{
+cat:"Setup",
+title:"Display Riser Shelf",
+link:"#",
+imgs:["https://i.imgur.com/SPNdKPl.jpg"]
+},
+{
+cat:"Setup",
+title:"Acrylic Display Case",
+link:"#",
+imgs:["https://i.imgur.com/toEM4X4.jpg"]
+}
+];
+
+// ========== GLOBALS ==========
+let currentCategory = "Anime";
+let globalSearchQuery = "";
+let autoSlideIntervals = new Map();
+
+const containerEl = document.getElementById("container");
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearSearchBtn");
+const searchStatusSpan = document.getElementById("searchStatus");
+
+function getFilteredProducts() {
+    let productsAfterSearch = data;
+    if (globalSearchQuery.trim() !== "") {
+        const query = globalSearchQuery.trim().toLowerCase();
+        productsAfterSearch = data.filter(item => item.title.toLowerCase().includes(query));
+    }
+    return productsAfterSearch.filter(item => item.cat === currentCategory);
+}
+
+function clearAllAutoSlides() {
+    for (let intervalId of autoSlideIntervals.values()) {
+        clearInterval(intervalId);
+    }
+    autoSlideIntervals.clear();
+}
+
+function startAutoSlide(sliderElement) {
+    if (!sliderElement) return;
+    if (autoSlideIntervals.has(sliderElement)) {
+        clearInterval(autoSlideIntervals.get(sliderElement));
+        autoSlideIntervals.delete(sliderElement);
+    }
+    const imgs = sliderElement.querySelectorAll("img");
+    if (imgs.length <= 1) return;
+    
+    const intervalId = setInterval(() => {
+        if (!sliderElement.isConnected) {
+            clearInterval(intervalId);
+            autoSlideIntervals.delete(sliderElement);
+            return;
+        }
+        const currentImgs = sliderElement.querySelectorAll("img");
+        if (currentImgs.length === 0) return;
+        let currentIdx = parseInt(sliderElement.dataset.i) || 0;
+        currentImgs[currentIdx].classList.remove("active");
+        currentIdx = (currentIdx + 1) % currentImgs.length;
+        currentImgs[currentIdx].classList.add("active");
+        sliderElement.dataset.i = currentIdx;
+    }, 3000);
+    
+    autoSlideIntervals.set(sliderElement, intervalId);
+}
+
+function slide(cardElement, direction) {
+    const imgs = cardElement.querySelectorAll("img");
+    if (!imgs.length) return;
+    let currentIdx = parseInt(cardElement.dataset.i) || 0;
+    imgs[currentIdx].classList.remove("active");
+    currentIdx += direction;
+    if (currentIdx < 0) currentIdx = imgs.length - 1;
+    if (currentIdx >= imgs.length) currentIdx = 0;
+    imgs[currentIdx].classList.add("active");
+    cardElement.dataset.i = currentIdx;
+    
+    if (autoSlideIntervals.has(cardElement)) {
+        clearInterval(autoSlideIntervals.get(cardElement));
+        autoSlideIntervals.delete(cardElement);
+        startAutoSlide(cardElement);
+    }
+}
+
+function render() {
+    clearAllAutoSlides();
+    const filtered = getFilteredProducts();
+    containerEl.innerHTML = "";
+    
+    if (globalSearchQuery.trim() !== "") {
+        const resultCount = filtered.length;
+        searchStatusSpan.innerHTML = `🔍 Found ${resultCount} result${resultCount !== 1 ? 's' : ''} for "${escapeHtml(globalSearchQuery)}" in ${currentCategory}`;
+        searchStatusSpan.style.display = "block";
+    } else {
+        searchStatusSpan.innerHTML = "";
+        searchStatusSpan.style.display = "none";
+    }
+    
+    if (filtered.length === 0) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "empty-message";
+        if (globalSearchQuery.trim() !== "") {
+            emptyDiv.innerHTML = `🔎 No products matching "${escapeHtml(globalSearchQuery)}" in ${currentCategory}. Try another category or clear search.`;
+        } else {
+            emptyDiv.innerHTML = `✨ No items in ${currentCategory} category.`;
+        }
+        containerEl.appendChild(emptyDiv);
+        return;
+    }
+    
+    filtered.forEach(product => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card";
+        
+        let imagesHtml = "";
+        if (product.imgs && product.imgs.length) {
+            product.imgs.forEach((imgSrc, i) => {
+                if (imgSrc && imgSrc.trim() !== "") {
+                    const activeClass = (i === 0) ? "active" : "";
+                    imagesHtml += `<img src="${imgSrc}" class="${activeClass}" loading="lazy" alt="${escapeHtml(product.title)}">`;
+                }
+            });
+        }
+        if (!imagesHtml) {
+            imagesHtml = `<div style="background:#1e1e26; height:100%; display:flex; align-items:center; justify-content:center; color:#aaa;">📷 No preview</div>`;
+        }
+        
+        cardDiv.innerHTML = `
+            <div style="position:relative;">
+                <div class="slider" data-i="0">
+                    ${imagesHtml}
+                </div>
+                <button class="nav-btn nav-left" onclick="slide(this.parentElement.querySelector('.slider'), -1)">‹</button>
+                <button class="nav-btn nav-right" onclick="slide(this.parentElement.querySelector('.slider'), 1)">›</button>
+            </div>
+            <div class="card-content">
+                <div class="title">${escapeHtml(product.title)}</div>
+                <a href="${product.link}" class="buy-link" target="_blank" rel="noopener noreferrer">Buy Now</a>
+            </div>
+        `;
+        containerEl.appendChild(cardDiv);
+    });
+    
+    const sliders = document.querySelectorAll(".slider");
+    sliders.forEach(slider => {
+        if (slider.querySelectorAll("img").length > 1) {
+            startAutoSlide(slider);
+        }
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function refreshUI() {
+    render();
+}
+
+function setCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll(".btn[data-cat]").forEach(btn => {
+        if (btn.getAttribute("data-cat") === cat) {
+            btn.classList.add("activeCat");
+        } else {
+            btn.classList.remove("activeCat");
+        }
+    });
+    refreshUI();
+}
+
+function handleGlobalSearch() {
+    globalSearchQuery = searchInput.value;
+    refreshUI();
+}
+
+function clearSearch() {
+    searchInput.value = "";
+    globalSearchQuery = "";
+    refreshUI();
+    searchInput.focus();
+}
+
+function bindEvents() {
+    const catButtons = document.querySelectorAll(".btn[data-cat]");
+    catButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const cat = btn.getAttribute("data-cat");
+            setCategory(cat);
+        });
+    });
+    searchInput.addEventListener("input", handleGlobalSearch);
+    clearBtn.addEventListener("click", clearSearch);
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") clearSearch();
+    });
+}
+
+function init() {
+    currentCategory = "Anime";
+    globalSearchQuery = "";
+    searchInput.value = "";
+    bindEvents();
+    document.querySelectorAll(".btn[data-cat]").forEach(btn => {
+        if (btn.getAttribute("data-cat") === "Anime") btn.classList.add("activeCat");
+        else btn.classList.remove("activeCat");
+    });
+    refreshUI();
+}
+
+window.slide = slide;
+init();
+</script>
+</body>
+</html>
